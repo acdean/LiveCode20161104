@@ -1,24 +1,22 @@
 PImage img;
 boolean video;
+int THINGS = 5;
+ArrayList<Thing> things = new ArrayList<Thing>();
 
 void setup() {
   size(640, 360, P3D);
   background(0);
   colorMode(HSB, 100, 100, 100);
   textureMode(NORMAL);
+  for (int i = 0; i < THINGS; i++) {
+    things.add(new Thing());
+  }
 }
 
 float A = 0.05;
 float B = 0.95;
 float RAD = 50;
-float a = random(TWO_PI);
-float d = random(-.01, .01);
-float px = random(-5, 5);
-float py = random(-5, 5);
-float a1 = random(TWO_PI);
-float d1 = random(-.01, .01);
-float px1 = random(-5, 5);
-float py1 = random(-5, 5);
+float SZ = 40;
 
 void draw() {
   if (img != null) {
@@ -31,27 +29,10 @@ void draw() {
     endShape();
   }
   noFill();
-
-  strokeWeight(1);
-  stroke(frameCount % 100, 100, 100);
-  a += d;
-  pushMatrix();
-  translate((width / 2) + (RAD * sin(a * px)), (height / 2) + (RAD * sin(a * py)), 100);
-  rotateX(radians(frameCount * 5.74));
-  rotateY(radians(frameCount * 2.57));
-  rotateZ(radians(frameCount * 3.14));
-  box(40);
-  popMatrix();
-
-  stroke((frameCount + 50) % 100, 100, 100);
-  a1 += d1;
-  pushMatrix();
-  translate((width / 2) + (RAD * sin(a1 * px1)), (height / 2) + (RAD * sin(a1 * py1)), 100);
-  rotateX(radians(frameCount * 5.1));
-  rotateY(radians(frameCount * 6.3));
-  rotateZ(radians(frameCount * 1.7));
-  box(40);
-  popMatrix();
+  
+  for (Thing t : things) {
+    t.draw();
+  }
 
   updatePixels();
   img = copy();
@@ -61,6 +42,37 @@ void draw() {
     if (frameCount > 500) {
       exit();
     }
+  }
+}
+
+class Thing {
+  int c = (int)random(100);
+  int dc = (int)random(-2, 2);
+  float a = random(TWO_PI);
+  float d = random(-.03, .03);
+  float px = random(-5, 5);
+  float py = random(-5, 5);
+  float rot = random(TWO_PI);
+  float drot = random(-.03, .03);
+
+  void draw() {
+    c = (c + dc + 100) % 100;
+    stroke(c, 100, 100);
+    a += d;
+    pushMatrix();
+    translate((width / 2) + (RAD * sin(a * px)), (height / 2) + (RAD * cos(a * py)));
+    rot += drot;
+    rotate(rot);
+    beginShape();
+    for (int i = 0; i < 10; i++) {
+      float rad = SZ;
+      if ((i & 1) == 0) {
+        rad = .35 * SZ;
+      }
+      vertex(rad * cos(TWO_PI * i / 10.0), rad * sin(TWO_PI * i / 10.0));
+    }
+    endShape(CLOSE);
+    popMatrix();
   }
 }
 
